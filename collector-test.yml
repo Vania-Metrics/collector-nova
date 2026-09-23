@@ -1,0 +1,15 @@
+# What the test server needs besides the core; read by the core's testkit (CollectorTestConfig).
+# The first jar of a list is the target plugin: its version is checked against compatibility.yml.
+# Nova refuses to start without its agent: the path is the file name the harness copies.
+collectors: [nova]
+runtime: java21
+# Nova builds a resource pack from the Minecraft assets on start: 1G runs out.
+memory: 3G
+# It also downloads about 400 MB of Minecraft assets before the server says it is done.
+startup-timeout: 20m
+jvm-args:
+  - -javaagent:plugins/Nova-0.22.3+MC-1.21.11.jar
+plugins:
+  bukkit:
+    - url: https://github.com/xenondevs/Nova/releases/download/0.22.3/Nova-0.22.3%2BMC-1.21.11.jar
+      sha512: 950c1d8d5ef31444e2a8ac409efbe635af4b068cd5b69a01dfe16afc6c9fc8e3eeadb3c7e9e0ddfc4b8525a83e5440eb27572eff4128e2e8b3bee23b8f033e70
