@@ -1,0 +1,10 @@
+# Métriques des machines Nova.
+#
+# Les registres de Nova ne savent que chercher, pas énumérer. Le TileEntityManager, lui, énumère — et c'est ce qui compte.
+name: VaniaMetrics-Nova
+version: ${version}
+main: fr.samflix.vaniametrics.module.nova.NovaPaper
+api-version: '1.21'
+authors: [mc-vania]
+description: "Métriques Nova : machines posées par monde."
+depend: [VaniaMetrics, Nova]
