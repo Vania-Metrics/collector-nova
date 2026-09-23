@@ -1,4 +1,4 @@
-// colecteur-nova — a VaniaMetrics-<Name>-<v>.jar in build/libs/
+// collector-nova — a vania-metrics-collector-nova-<v>.jar in build/libs/
 //
 // One module = one jar, loaded by the platform if — and only if — the core is
 // present (`depend: [VaniaMetrics]` in plugin.yml). No third-party jar is
@@ -34,13 +34,6 @@ tasks.processResources {
     filesMatching("plugin.yml") { filter { it.replace("\${version}", v) } }
 }
 
-// The jar name comes from `name:`, not from the entry class: the server repo's
-// listing identifies modules by their plugin name. One source only, the one
-// Bukkit displays.
-val pluginYml = file("src/main/resources/plugin.yml")
-val displayName = Regex("""(?m)^name: VaniaMetrics-(\S+)""").find(pluginYml.readText())?.groupValues?.get(1)
-    ?: error("$pluginYml: `name:` expected in the form VaniaMetrics-<Name>")
-
 tasks.jar {
-    archiveFileName = "VaniaMetrics-$displayName-$version.jar"
+    archiveFileName = "vania-metrics-${rootProject.name}-$version.jar"
 }
