@@ -1,3 +1,0 @@
-# Jars des plugins tiers dont ce collecteur dépend à la COMPILATION.
-# Une ligne par URL. Aucun jar tiers n'est embarqué dans le jar produit.
-https://github.com/xenondevs/Nova/releases/download/0.22.3/Nova-0.22.3%2BMC-1.21.11.jar
