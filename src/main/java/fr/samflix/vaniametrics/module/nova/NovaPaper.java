@@ -6,25 +6,25 @@ import fr.samflix.vaniametrics.api.VaniaMetrics;
 import fr.samflix.vaniametrics.api.VaniaMetricsProvider;
 
 /**
- * Métriques des machines Nova.
+ * Nova machine metrics.
  *
- * <p>Les registres de Nova ne savent que chercher, pas énumérer. Le TileEntityManager, lui, énumère — et c'est ce qui compte.
+ * <p>Nova's registries can only look up, not enumerate. The TileEntityManager, though, enumerates — and that's what matters.
  */
 public final class NovaPaper extends JavaPlugin {
 
-	private NovaCollector collecteur;
+	private NovaCollector collector;
 
 	@Override
 	public void onEnable() {
-		VaniaMetrics metriques = VaniaMetricsProvider.get();
-		collecteur = new NovaCollector();
-		metriques.enregistrer(collecteur);
+		VaniaMetrics metrics = VaniaMetricsProvider.get();
+		collector = new NovaCollector();
+		metrics.register(collector);
 	}
 
 	@Override
 	public void onDisable() {
-		if (collecteur != null) {
-			VaniaMetricsProvider.chercher().ifPresent(m -> m.retirer(collecteur));
+		if (collector != null) {
+			VaniaMetricsProvider.find().ifPresent(m -> m.unregister(collector));
 		}
 	}
 }

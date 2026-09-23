@@ -10,65 +10,63 @@ import fr.samflix.vaniametrics.api.Gauge;
 import fr.samflix.vaniametrics.api.MetricRegistry;
 
 /**
- * Nova — le recensement des machines.
+ * Nova — the machine census.
  *
- * <p>CE QUE SON API PERMET, ET CE QU'ELLE NE PERMET PAS. Les registres de Nova
- * ({@code NovaBlockRegistry}, {@code NovaItemRegistry}) ne font que de la RECHERCHE par
- * identifiant : ils n'énumèrent rien, il n'y a donc aucun « combien de blocs personnalisés
- * existent » à en tirer. Le {@code TileEntityManager}, lui, énumère — c'est la seule porte, et
- * elle donne ce qui compte vraiment : le nombre de MACHINES posées, celles qui consomment du temps
- * de tick.
+ * <p>What its API allows, and what it doesn't: Nova's registries
+ * ({@code NovaBlockRegistry}, {@code NovaItemRegistry}) only do lookup by identifier — they
+ * enumerate nothing, so there's no "how many custom blocks exist" to pull from them. The
+ * {@code TileEntityManager}, though, enumerates. It's the only door, and it gives what actually
+ * matters: the number of machines placed, the ones consuming tick time.
  *
- * <p>EN FOND, ET POUR UNE BONNE RAISON : {@code getTileEntities(World)} construit une liste. Sur
- * un serveur couvert de machines, la faire à chaque scrape rendrait l'exportateur responsable du
- * lag qu'il mesure.
+ * <p>Background mode, for good reason: {@code getTileEntities(World)} builds a list. On a server
+ * covered in machines, doing that on every scrape would make the exporter responsible for the
+ * lag it measures.
  */
 public final class NovaCollector implements Collector {
 
 	private Gauge machines;
 
 	@Override
-	public String nom() {
+	public String name() {
 		return "nova";
 	}
 
 	@Override
-	public String origine() {
+	public String source() {
 		return "Nova";
 	}
 
 	@Override
-	public boolean enFond() {
+	public boolean isBackground() {
 		return true;
 	}
 
 	@Override
-	public long intervalleSecondes() {
+	public long intervalSeconds() {
 		return 30;
 	}
 
 	@Override
-	public boolean filPrincipal() {
-		// L'énumération traverse les mondes chargés : c'est de l'état du serveur, et il se lit
-		// sur son fil.
+	public boolean needsMainThread() {
+		// Enumeration walks loaded worlds: that's server state, and it's read on its thread.
 		return true;
 	}
 
 	@Override
-	public void declarer(MetricRegistry r) {
+	public void declare(MetricRegistry r) {
 		machines = r.gauge("nova_tile_entities",
-				"Machines Nova posées, par monde. Ce sont elles qui consomment du temps de tick — "
-						+ "un nombre qui grimpe explique un MSPT qui grimpe.",
+				"Nova machines placed, per world. These are what consume tick time — "
+						+ "a rising number explains a rising MSPT.",
 				"world");
 	}
 
 	@Override
-	public void relever(MetricRegistry r) {
-		var gestionnaire = Nova.getNova().getTileEntityManager();
-		// Un monde déchargé doit cesser d'être publié plutôt que de figer son dernier compte.
+	public void collect(MetricRegistry r) {
+		var manager = Nova.getNova().getTileEntityManager();
+		// An unloaded world must stop being published rather than freeze its last count.
 		machines.clear();
-		for (World monde : Bukkit.getWorlds()) {
-			machines.set(gestionnaire.getTileEntities(monde).size(), monde.getName());
+		for (World world : Bukkit.getWorlds()) {
+			machines.set(manager.getTileEntities(world).size(), world.getName());
 		}
 	}
 }
